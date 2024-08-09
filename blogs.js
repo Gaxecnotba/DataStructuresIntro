@@ -1,7 +1,46 @@
 function findTitlesPublishedOn(date, blogPostTitles) {
-  //It should return all blog posts titles that were published on a specified date using binary search
-}
+  // It should return all blog posts titles that were published on a specified date using binary search
 
+  // Helper function to format date
+  function formatDate(dateStr) {
+    return dateStr.split("T")[0];
+  }
+
+  function binarySearch(arr, target, findFirst) {
+    let left = 0;
+    let right = arr.length - 1;
+    let result = -1;
+
+    while (left <= right) {
+      const mid = Math.floor((left + right) / 2);
+      const midDate = formatDate(arr[mid].published_on);
+
+      if (midDate === target) {
+        result = mid;
+        if (findFirst) {
+          right = mid - 1;
+        } else {
+          left = mid + 1;
+        }
+      } else if (midDate < target) {
+        left = mid + 1;
+      } else {
+        right = mid - 1;
+      }
+    }
+
+    return result;
+  }
+
+  const formattedDate = formatDate(date);
+  const firstIndex = binarySearch(blogPostTitles, formattedDate, true);
+  if (firstIndex === -1) return [];
+
+  const lastIndex = binarySearch(blogPostTitles, formattedDate, false);
+  return blogPostTitles
+    .slice(firstIndex, lastIndex + 1)
+    .map((post) => post.title);
+}
 const blogPostTitles = [
   {
     title: "Mastering the Art of Ramen: A Beginner's Guide",
@@ -191,3 +230,9 @@ const blogPostTitles = [
     published_on: "2026-12-01T12:00:00Z",
   },
 ];
+
+const titlesOnDate = findTitlesPublishedOn(
+  "2023-04-20T00:00:00Z",
+  blogPostTitles
+);
+console.log(titlesOnDate);
